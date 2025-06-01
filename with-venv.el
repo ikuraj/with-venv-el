@@ -179,6 +179,9 @@ See `with-venv-find-venv-dir' how this variable is used."
           'with-venv-find-venv-dir-dot-venv
           t)
 (add-hook 'with-venv-find-venv-dir-functions
+          'with-venv-find-venv-dir-dot-venv-projectile
+          t)
+(add-hook 'with-venv-find-venv-dir-functions
           'with-venv-find-venv-dir-venv
           t)
 
@@ -236,6 +239,16 @@ This function processes `with-venv-find-venv-dir-functions' with
       (setq with-venv--last-found-type ".venv/")
       (expand-file-name ".venv"
                         dir))))
+
+
+(defun with-venv-find-venv-dir-dot-venv-projectile ()
+  "Try to find venv dir by its name within the projectile project root."
+  (let ((project-root (projectile-project-root)))
+    (when project-root
+      (let ((dir (locate-dominating-file project-root ".venv/bin/python")))
+        (when dir
+          (setq with-venv--last-found-type ".venv/")
+          (expand-file-name ".venv" dir))))))
 
 (defun with-venv-find-venv-dir-venv ()
   "Try to find venv dir by its name."
